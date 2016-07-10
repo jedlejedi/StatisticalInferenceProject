@@ -1,7 +1,7 @@
 ---
-title: "Study of the Properties of the Distribution of Average of 40 Exponentials"
+title: "Study of the Properties of the Distribution of Averages of 40 Exponentials"
 author: "Julien Lafontaine"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -9,12 +9,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(ggplot2)
 
-set.seed(21313)
+set.seed(27197)
 ```
 
 ## Oveview
 
-In this study, we will investigate the exponential distibution. In particular, we will look at the distribution of the average of 40 exponentials. We will use simulations to  compare the properties of this distribution (mean, variances and normality) with the Central Limits Theorme's predictions.
+In this study, we will investigate the exponential distibution. In particular, we will look at the distribution of averages of 40 exponentials. We will use simulations to  compare the properties of this distribution (mean, variances and normality) with the Central Limits Theorme's predictions.
 
 ## Simulations
 
@@ -26,7 +26,9 @@ First we will generate 1000 exponentials with a rate of 0.2
 exps <- rexp(n = 1000, rate = 0.2)
 ```
 
-Then we will generate 40 exponentials with a rate of 0.2, take the average and repeat this 1000 times. 
+Then we will generate 1000 averages of 40 exponentials with a rate of 0.2
+
+To do this we generate 40 exponentials with a rate of 0.2, take the average and repeat this 1000 times. 
 ``` {r}
 mns = NULL
 for (i in 1 : 1000) {
@@ -37,11 +39,11 @@ for (i in 1 : 1000) {
 
 ## Sample Mean versus Theoretical Mean
 
-Here we will compare the theoritical mean of the average of 40 exponentials of rate lambda with the result of our simulation.
+Here we compare the theoritical mean of the average of 40 exponentials of rate lambda with the result of our simulation.
 
 The mean of an exponential distribution of rate lambda is 1 / lambda. If lambda is 0.2 the mean is 5
 
-Therefore the theoritical mean of a the distribution of average of 40 exponentials is also 5.
+Therefore the theoritical mean of the distribution of averages of 40 exponentials is also 5.
 
 ```{r}
 theo_mean <- 1 / 0.2
@@ -49,7 +51,7 @@ theo_mean <- 1 / 0.2
 theo_mean
 ```
 
-The results from our simulation of 1000 average of 40 exponentials is approximatly 5 and seems consistent with the theory:
+The results from our simulation of 1000 averages of 40 exponentials is approximatly 5 and seems consistent with the theory:
 
 ```{r}
 
@@ -67,8 +69,9 @@ g <- ggplot()
 g <- g + geom_histogram(aes(x = mns), col = "black", bins = 30)
 g <- g + geom_vline(aes(xintercept = theo_mean, color = "Theo. Mean"), show.legend = TRUE)
 g <- g + geom_vline(aes(xintercept = sim_mean, color = "Sample Mean"), show.legend = TRUE)
-g <- g + ggtitle("Average of 40 exponetials (1000 simulations)")
+g <- g + ggtitle("Average of 40 exponentials (1000 simulations)")
 g <- g + xlab("Averages") + ylab("Frequency")
+g <- g + theme(legend.title=element_blank())
 g
 ```
 
@@ -78,7 +81,7 @@ g
 
 We will now compare the theoritical variance of the average of 40 exponentials of rate lambda with the result of our simulation.
 
-The variance of exponential distribution of rate lambda is 1 / lambda^2. If lambda is 0.2 the variance is 25
+The variance of an exponential distribution of rate lambda is 1 / lambda^2. If lambda is 0.2 the variance is 25
 
 ```{r}
 1 / 0.2^2
@@ -92,7 +95,9 @@ theo_var <- 1 / (40 * 0.2^2)
 theo_var
 ```
 
-The results from the simulation of 1000 average of 40 exponentials also appears to be consistent with the theory:
+The variance of the distribution of averages of 40 exponentials is a lot less than that of the original exponential distribution as averaging 40 datapoints reduces the variability of the distribution.
+
+The results from the simulation of 1000 average of 40 exponentials appears to be consistent with the theory:
 
 ```{r}
 
@@ -110,14 +115,15 @@ g <- ggplot()
 g <- g + geom_histogram(aes(x = mns), col = "black", bins = 30)
 g <- g + geom_vline(aes(xintercept = sim_mean + c(-1,1) * sqrt(theo_var), color = "Theo. Std. Dev."), show.legend = TRUE)
 g <- g + geom_vline(aes(xintercept = sim_mean + c(-1,1) * sqrt(sim_var), color = "Standard Error"), show.legend = TRUE)
-g <- g + ggtitle("Average of 40 exponetials (1000 simulations)")
+g <- g + ggtitle("Average of 40 exponentials (1000 simulations)")
 g <- g + xlab("Averages") + ylab("Frequency")
+g <- g + theme(legend.title=element_blank())
 g
 ```
 
 ## Distribution
 
-We will now look at the difference between the distribution of a large collection of random exponentials and the distribution of a large collection of averages of 40 exponentials.
+We will now look at the differences between the distribution of a large collection of random exponentials and the distribution of a large collection of averages of 40 exponentials.
 
 The figure below shows that the exponential distribution differs significantly from the normal distributions. It is not symetrical and seems to be skewed towards the left.
 
@@ -128,16 +134,16 @@ df1 <- data.frame(obs = exps)
 g <- ggplot(data = df1, aes(x = obs))
 g <- g + geom_histogram(aes(y=..density..), color = "black", bins = 30)
 g <- g + geom_density(alpha=.2)
-g <- g + geom_vline(xintercept = mean(exps))
-g <- g + ggtitle("Distribution of a large collection of Exponetials")
-g <- g + ggtitle("Exponentials (1000 simulations)")
+g <- g + geom_vline(aes(xintercept = mean(exps), color = "Mean"))
+g <- g + ggtitle("Distribution of a Large Collection of Exponentials\n (1000 Simulations)")
 g <- g + xlab("Averages") + ylab("Frequency")
+g <- g + theme(legend.title=element_blank())
 g
 ```
 
-The distribution of averages of 40 exponentials on the over hand appears approxamately normal. It is bell shaped, centered around the mean and most of the observations seem to fall within 2 standard deviations of the mean.
+The distribution of averages of 40 exponentials on the over hand appears approximately normal. It is bell shaped, centered around the mean and most of the observations seem to fall within 2 standard deviations of the mean.
 
-It is consistent with the prediction of the central limit theoreme that states that the distribution of avaerages of iid random variable is normally distributed.
+It is consistent with the prediction of the central limit theoreme that states that the distribution of averages of iid random variables is normal.
 
 ```{r}
 df2 <- data.frame(avg = mns)
@@ -150,8 +156,7 @@ g <- g + geom_vline(aes(xintercept = mean(mns) + -2 * sd(mns), color = "Std. Dev
 g <- g + geom_vline(aes(xintercept = mean(mns) + -1 * sd(mns), color = "Std. Dev."))
 g <- g + geom_vline(aes(xintercept = mean(mns) + 1 * sd(mns), color = "Std. Dev."))
 g <- g + geom_vline(aes(xintercept = mean(mns) + 2 * sd(mns), color = "Std. Dev."))
-g <- g + ggtitle("Distribution of a large collection of Exponentials")
-g <- g + ggtitle("Average of 40 exponentials (1000 simulations)")
+g <- g + ggtitle("Distribution of a Large Collection of\nAverages of 40 Exponentials (1000 Simulations)")
 g <- g + xlab("Averages") + ylab("Frequency")
 g <- g + theme(legend.title=element_blank())
 g

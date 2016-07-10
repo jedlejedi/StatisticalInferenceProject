@@ -1,6 +1,6 @@
 ---
 title: "ToothGrowth"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +11,7 @@ library(ggplot2)
 
 ## Summary of the Data in the ToothGrowth Dataset
 
-The ToothGrowth dataset in R contains measures of the effect of various dose levels of Vitamin C (0.5, 1, and 2 mg/day) on tooth growth in 60 guinea pigs. For each dose level, 2 different delivery methods are compared orage juice (OJ) and ascorbic acid (VC).
+The ToothGrowth dataset in R contains measures of the effect of various dose levels of Vitamin C (0.5, 1, and 2 mg/day) on tooth growth in 60 guinea pigs. For each dose level, 2 different delivery methods are compared: orange juice (OJ) and ascorbic acid (VC).
 
 ```{r}
 head(ToothGrowth)
@@ -19,20 +19,21 @@ head(ToothGrowth)
 summary(ToothGrowth)
 ```
 
-A number of observations can be made regarding the effect of Vitamin C on tooth gowth.
+A number of hypothesis can be made regarding the effect of Vitamin C on tooth gowth.
 
-Higher dose levels of Vitamin C seems to yield to greater tooth gowth.
+Higher dose levels of Vitamin C seem to yield to greater tooth gowth.
 That seems to be the cases regardless of the delivery method.
 
 ```{r warning=FALSE}
-ggplot(data = ToothGrowth, aes(dose, len, color = supp)) + geom_point() + geom_smooth()
+
+ggplot(data = ToothGrowth, aes(dose, len, color = supp)) + geom_point() + geom_smooth() + xlab("Dose in milligrams/day") + ylab("Tooth length") + theme(legend.title=element_blank()) + ggtitle("Impact of Vitamin C on Tooth Growth")
 ```
 
-Orange juice seems to be a more efficient delivery method than ascorbic acid for dose levels 0.5 and 1 mg/day. 
-For 2mg/day it is not clear which delivery method is the most efficient.
+Orange juice seems to be a more efficient delivery method than ascorbic acid for dose levels of 0.5 and 1 mg/day. 
+For 2mg/day, it is not clear whether the delivery method makes a difference.
 
 ```{r}
-ggplot(data = ToothGrowth, aes(x=factor(dose), y=len, fill=supp)) + geom_boxplot()
+ggplot(data = ToothGrowth, aes(x=factor(dose), y=len, fill=supp)) + geom_boxplot() + xlab("Dose in milligrams/day") + ylab("Tooth length") + theme(legend.title=element_blank()) + ggtitle("Impact Vitmanin C Delivery Method on Tooth Growth")
 ```
 
 ## Hypothesis Testing
@@ -50,18 +51,19 @@ tg2 <- subset(ToothGrowth, dose == 2)
 Null Hypothesis: Increasing Dosage from 0.5mg to 1mg does not yield to greater tooth gowth
 
 ```{r}
-t.test(tg1$len - tg05$len, paired = FALSE, var.equal = FALSE, alternative = "greater")$conf
+t.test(tg1$len, tg05$len, paired = FALSE, var.equal = FALSE, alternative = "greater", conf.level = 0.975)$conf
 ```
-The 95% confidence interval is above 0 we therefore reject the null hypothesis.
+The confidence interval is above 0 we therefore reject the null hypothesis. Increasing the dose level from 0.5 to 1 mg/a day yields to greater tooth growth.
 
 ### 1 vs 2 mg/day
 
 Null Hypothesis: Increasing Dosage from 1mg to 2mg does not yield to greater tooth gowth
 
 ```{r}
-t.test(tg2$len - tg1$len, paired = FALSE, var.equal = FALSE, alternative = "greater")$conf
+t.test(tg2$len, tg1$len, paired = FALSE, var.equal = FALSE, alternative = "greater", conf.level = 0.975)$conf
 ```
-The 95% confidence interval is above 0 we therefore reject the null hypothesis.
+The confidence interval is above 0 we therefore reject the null hypothesis.
+Increasing the dose level from 1 to 2 mg/a day yields to greater tooth growth.
 
 ### Impact of Delivery Methods on Tooth Growth
 
@@ -70,12 +72,12 @@ tgOJ <- subset(ToothGrowth, supp == "OJ")
 tgVC <- subset(ToothGrowth, supp == "VC")
 ```
 
-Null Hypothesis: The delivery method has no ipact on tooth growth
+Null Hypothesis: The delivery method has no impact on tooth growth
 
 ```{r}
-t.test(tgOJ$len - tgVC$len, paired = FALSE, var.equal = FALSE)$conf
+t.test(tgOJ$len, tgVC$len, paired = FALSE, var.equal = FALSE)$conf
 ```
-The 95% confidence interval does not contain 0. We therefore reject the null hypothesis.
+The 95% confidence interval contains 0. We therefore cannot reject the null hypothesis. We cannot conclude that the delivery method has an impact on tooth growth.
 
 ### Impact of Delivery Methods on Tooth Growth for Various Dose Levels
 
@@ -87,9 +89,9 @@ Null Hypothesis: For a dosage of 0.5mg/day, the delivery method has no impact on
 tgOJ05 <- subset(tgOJ, dose == 0.5) 
 tgVC05 <- subset(tgVC, dose == 0.5)
 
-t.test(tgOJ05$len - tgVC05$len, paired = FALSE, var.equal = FALSE)$conf
+t.test(tgOJ05$len, tgVC05$len, paired = FALSE, var.equal = FALSE)$conf
 ```
-The 95% confidence interval does not contain 0. We therefore reject the null hypothesis.
+The 95% confidence interval does not contain 0. We therefore reject the null hypothesis. For a dose of 0.5 mg/day, using Orange jucice as delivery method seems to have a positive impact on tooth growth.
 
 
 #### Dosage = 1mg/day
@@ -100,29 +102,32 @@ Null Hypothesis: For a dosage of 1mg/day, the delivery method has no impact on t
 tgOJ1 <- subset(tgOJ, dose == 1) 
 tgVC1 <- subset(tgVC, dose == 1)
 
-t.test(tgOJ1$len - tgVC1$len, paired = FALSE, var.equal = FALSE)$conf
+t.test(tgOJ1$len, tgVC1$len, paired = FALSE, var.equal = FALSE)$conf
 ```
-The 95% confidence interval does not contain 0. We therefore reject the null hypothesis.
+The 95% confidence interval does not contain 0. We therefore reject the null hypothesis. For a dose of 1 mg/day, using Orange jucice as delivery method seems to have a positive impact on tooth growth.
 
 #### Dosage = 2mg/day
 
-Null Hypothesis: For a dosage of 1mg/day, the delivery method has no impact on tooth growth
+Null Hypothesis: For a dosage of 2mg/day, the delivery method has no impact on tooth growth
 
 ```{r}
 tgOJ2 <- subset(tgOJ, dose == 2) 
 tgVC2 <- subset(tgVC, dose == 2)
 
-t.test(tgOJ2$len - tgVC2$len, paired = FALSE, var.equal = FALSE)$conf
+t.test(tgOJ2$len, tgVC2$len, paired = FALSE, var.equal = FALSE)$conf
 ```
-The 95% confidence interval contains 0. We therefore fail to reject the null hypothesis.
+The 95% confidence interval contains 0. We therefore fail to reject the null hypothesis. For a dose of 2 mg/day, we cannot conclude that the delivery method has an impact on tooth growth.
 
 ## Conclusions
 
+Based on our analysis of the data in the ToothGrowth dataset we can conclude the following:
+
 * Higher dose levels of Vitamin C yield to greater tooth gowth.
 * Orange juice a more efficient delivery method than ascorbic acid for dose levels of 0.5mg/day and 1mg/day
-* The delivery methd does not seem to impact tooth gowth for dose levels of 2mg/day
+* The delivery method does not seem to impact tooth gowth for dose levels of 2 mg/day
+
 
 ## Assumptions
 
-One of the assumptions made in this study is that the variance between different dose levels and delivery methods are not equal.
+One of the key assumptions made in this study is that the variances between different dose levels and delivery methods are not equal.
 
